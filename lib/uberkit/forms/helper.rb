@@ -14,14 +14,28 @@ module Uberkit::Forms::Helper
     args = parse_options(*args)
     form_for(name_or_object_or_array, *args, &proc)
   end
+  alias :build_form_for :uberform_for
   
   def uberform_fields_for(record_or_name_or_array, *args, &proc)
     args = parse_options(*args)
     fields_for(record_or_name_or_array, *args, &proc)
   end
+  alias :build_fields_for :uberform_fields_for
   
   def remote_uberform_for(name_or_object_or_array, *args, &proc)
     args = parse_options(*args)
     remote_form_for(name_or_object_or_array, *args, &proc)
+  end
+  alias :build_remote_form_for :remote_uberform_for
+  
+  # show validation error for a model and attribute
+  def validation_tag(model, attribute, options = {})
+    return if model.blank? or model.errors.blank?    
+    unless model.errors[attribute].blank?
+      # generate error markup
+      content_tag :span, :class => "error-message" do
+        [model.errors[attribute]].flatten.join(options[:separator] || ", ").to_s
+      end
+    end
   end
 end
