@@ -33,9 +33,7 @@ module Uberkit::Forms::Helper
     return if model.blank? or model.errors.blank?    
     unless model.errors[attribute].blank?
       # generate error markup
-      content_tag :span, :class => "error-message" do
-        [model.errors[attribute]].flatten.join(options[:separator] || ", ").to_s
-      end
+      return content_tag :span, [model.errors[attribute]].flatten.join(options[:separator] || ", ").to_s, :class => "error-message"
     end
   end
 end
