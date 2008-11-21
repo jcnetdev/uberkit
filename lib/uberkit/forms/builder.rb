@@ -79,10 +79,6 @@ class Uberkit::Forms::Builder < ActionView::Helpers::FormBuilder
   end
   
   def is_haml?
-    if respond_to?(:is_haml?)
-      return is_haml?
-    else
-      return false
-    end
+    !@haml_buffer.nil? && @haml_buffer.active?
   end
 end
