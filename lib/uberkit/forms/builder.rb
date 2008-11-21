@@ -19,18 +19,33 @@ class Uberkit::Forms::Builder < ActionView::Helpers::FormBuilder
   
   def generic_field(label_text,field,content,options = {})
     required = options.delete(:required)
+    help = options.delete(:help)
+    description = options.delete(:description)
+    hide_validation = options.delete(:hide_validation)
+
     content_tag(:div, :class => "field_row#{' required' if required}#{' labelless' if label_text == ""}") do
       ret = label(field, (label_text || field.to_s.titleize).to_s + ":") unless label_text == ""
       ret << content
-      ret << content_tag(:span, options.delete(:help), :class => "help") if options[:help]
-      ret << content_tag(:span, options.delete(:description), :class => "description") if options[:description]
-      ret << "<br/>"
+      ret << content_tag(:span, help, :class => "help") if help
+      ret << content_tag(:span, description, :class => "description") if description
+      ret << @template.validation_tag(@object, field).to_s unless hide_validation
       ret
     end
   end
   
-  def submit(text)
-    content_tag(:button, text, :type => "submit")
+  # create a submit helper
+  def submit(value = "Submit", options = {})
+    @template.submit_tag(value, options)
+  end
+
+  # create a image_submit helper
+  def image_submit(img_path, options = {})
+    @template.image_submit_tag(img_path, options)
+  end
+  
+  # create an error messages helper
+  def error_messages(object_name = nil)
+    @template.error_messages_for object_name || @object_name
   end
   
   def custom(options = {}, &block)
@@ -57,5 +72,11 @@ class Uberkit::Forms::Builder < ActionView::Helpers::FormBuilder
     @template.output_buffer = buf
   end
   
-  def is_haml?; false end
+  def is_haml?
+    if respond_to?(:is_haml?)
+      return is_haml?
+    else
+      return false
+    end
+  end
 end

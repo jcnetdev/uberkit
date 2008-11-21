@@ -7,9 +7,13 @@ module Uberkit
     def initialize(template)
       @template = template
     end
-
+    
     def is_haml?
-      false
+      if respond_to?(:is_haml?)
+        return is_haml?
+      else
+        return false
+      end
     end
   end
 end
