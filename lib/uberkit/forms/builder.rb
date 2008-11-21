@@ -6,6 +6,11 @@ class Uberkit::Forms::Builder < ActionView::Helpers::FormBuilder
   
   helpers = field_helpers + %w(date_select datetime_select time_select select html_area state_select country_select) - %w(hidden_field label fields_for) 
   
+  # alias old helpers so we can access "text_field_input" if we want to use a regular text_field
+  field_helpers.each do |name|
+    alias :"#{name}_input" :"#{name}"
+  end
+  
   helpers.each do |name|
     define_method(name) do |field, *args|
       options = args.extract_options!
@@ -13,7 +18,7 @@ class Uberkit::Forms::Builder < ActionView::Helpers::FormBuilder
       class_names << name
       options[:class] = class_names.join(" ")
       args << options
-      generic_field(options[:label],field,super(field,*args),{:description => options.delete(:description), :help => options.delete(:help), :required => options.delete(:required)})
+      generic_field(options[:label],field,super(field,*args),{:description => options.delete(:description), :help => options.delete(:help), :field_type => name, :required => options.delete(:required)})
     end
   end
   
@@ -22,8 +27,9 @@ class Uberkit::Forms::Builder < ActionView::Helpers::FormBuilder
     help = options.delete(:help)
     description = options.delete(:description)
     hide_validation = options.delete(:hide_validation)
+    field_type = options.delete(:field_type)
 
-    content_tag(:div, :class => "field_row#{' required' if required}#{' labelless' if label_text == ""}") do
+    content_tag(:div, :class => "field_row #{field_type} #{' required' if required}#{' labelless' if label_text == ""}") do
       ret = label(field, (label_text || field.to_s.titleize).to_s + ":") unless label_text == ""
       ret << content
       ret << content_tag(:span, help, :class => "help") if help
