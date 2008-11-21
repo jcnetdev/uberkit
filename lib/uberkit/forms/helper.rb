@@ -15,6 +15,11 @@ module Uberkit::Forms::Helper
     form_for(name_or_object_or_array, *args, &proc)
   end
   
+  def uberform_fields_for(record_or_name_or_array, *args, &proc)
+    args = parse_options(*args)
+    fields_for(record_or_name_or_array, *args, &proc)
+  end
+  
   def remote_uberform_for(name_or_object_or_array, *args, &proc)
     args = parse_options(*args)
     remote_form_for(name_or_object_or_array, *args, &proc)
